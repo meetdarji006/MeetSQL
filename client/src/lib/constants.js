@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:3000/api";
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 export const DIFFICULTY_CONFIG = {
   easy: { label: "Easy", color: "text-green-400", bg: "bg-green-400/10 border-green-400/20", dot: "bg-green-400" },
