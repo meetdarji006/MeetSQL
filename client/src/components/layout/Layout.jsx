@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth-store";
 import { Navbar } from "./Navbar";
+
+function useHasHydrated() {
+  const [hasHydrated, setHasHydrated] = useState(
+    useAuthStore.persist.hasHydrated()
+  );
+
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+    return unsub;
+  }, []);
+
+  return hasHydrated;
+}
 
 function LoadingScreen() {
   return (
@@ -12,7 +27,7 @@ function LoadingScreen() {
 }
 
 export function ProtectedLayout() {
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const hasHydrated = useHasHydrated();
   const accessToken = useAuthStore((s) => s.accessToken);
 
   if (!hasHydrated) {
@@ -34,7 +49,7 @@ export function ProtectedLayout() {
 }
 
 export function GuestLayout() {
-  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const hasHydrated = useHasHydrated();
   const accessToken = useAuthStore((s) => s.accessToken);
 
   if (!hasHydrated) {
@@ -51,3 +66,4 @@ export function GuestLayout() {
     </div>
   );
 }
+
