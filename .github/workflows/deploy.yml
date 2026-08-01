@@ -1,0 +1,50 @@
+name: Deploy MeetSQL API to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to EC2 via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            # Include Node.js and PM2 paths in environment
+            export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/bin/npm:/usr/bin/node:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
+            
+            cd ~/MeetSQL
+            
+            echo "📥 Pulling latest code..."
+            git pull origin main || git pull origin master
+            
+            echo "🐳 Ensuring Docker DB services are running..."
+            docker compose up -d postgres oracle
+            
+            echo "📦 Installing dependencies & building server..."
+            npm install
+            npm run build:server
+            
+            echo "🗄️ Running database migrations..."
+            npx drizzle-kit migrate
+            
+            echo "🌱 Seeding database..."
+            npm run seed
+            
+            echo "🔄 Restarting API process with PM2..."
+            pm2 restart meetsql-api || pm2 start dist/server.js --name meetsql-api
+            
+            echo "✅ MeetSQL API successfully deployed!"
