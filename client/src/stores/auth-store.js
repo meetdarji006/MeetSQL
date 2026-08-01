@@ -3,10 +3,11 @@ import { persist } from "zustand/middleware";
 
 export const useAuthStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       accessToken: null,
       refreshToken: null,
+      _hasHydrated: false,
 
       setAuth: (user, accessToken, refreshToken) =>
         set({ user, accessToken, refreshToken }),
@@ -17,10 +18,6 @@ export const useAuthStore = create(
       setUser: (user) => set({ user }),
 
       logout: () => set({ user: null, accessToken: null, refreshToken: null }),
-
-      get isAuthenticated() {
-        return !!get().accessToken;
-      },
     }),
     {
       name: "meetsql-auth",
@@ -29,6 +26,9 @@ export const useAuthStore = create(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
       }),
+      onRehydrateStorage: () => () => {
+        useAuthStore.setState({ _hasHydrated: true });
+      },
     }
   )
 );

@@ -3,8 +3,21 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth-store";
 import { Navbar } from "./Navbar";
 
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0b0f19]">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent" />
+    </div>
+  );
+}
+
 export function ProtectedLayout() {
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const accessToken = useAuthStore((s) => s.accessToken);
+
+  if (!hasHydrated) {
+    return <LoadingScreen />;
+  }
 
   if (!accessToken) {
     return <Navigate to="/login" replace />;
@@ -21,7 +34,12 @@ export function ProtectedLayout() {
 }
 
 export function GuestLayout() {
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
   const accessToken = useAuthStore((s) => s.accessToken);
+
+  if (!hasHydrated) {
+    return <LoadingScreen />;
+  }
 
   if (accessToken) {
     return <Navigate to="/problems" replace />;
