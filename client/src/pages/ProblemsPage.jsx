@@ -51,7 +51,7 @@ export function ProblemsPage() {
       </div>
 
       {/* Filters */}
-      {/* <ProblemFilters
+      <ProblemFilters
         search={search}
         setSearch={(val) => { setSearch(val); setPage(1); }}
         difficulty={difficulty}
@@ -59,7 +59,7 @@ export function ProblemsPage() {
         selectedTopic={selectedTopic}
         setSelectedTopic={(val) => { setSelectedTopic(val); setPage(1); }}
         topics={topics}
-      /> */}
+      />
 
       {/* Table Container */}
       <div className="rounded-xl border border-[#252d3d] bg-[#111827] overflow-hidden shadow-sm">

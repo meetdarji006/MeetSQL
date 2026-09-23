@@ -5,10 +5,10 @@ WORKDIR /app
 
 # Copy package descriptors
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY client/package*.json ./client/
-RUN npm --prefix client ci
+RUN npm --prefix client install
 
 # Copy source code
 COPY tsconfig.json drizzle.config.ts ./
