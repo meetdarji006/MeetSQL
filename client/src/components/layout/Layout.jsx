@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth-store";
 import { Navbar } from "./Navbar";
+import { MobileNotice } from "./MobileNotice";
 
 function useHasHydrated() {
   const [hasHydrated, setHasHydrated] = useState(
@@ -39,12 +40,18 @@ export function ProtectedLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19]">
-      <Navbar />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-    </div>
+    <>
+      {/* Mobile restriction notice screen for mobile devices (< 768px) */}
+      <MobileNotice />
+
+      {/* Main app layout for Tablets (iPad) & Desktops (>= 768px) */}
+      <div className="hidden md:flex min-h-screen flex-col bg-[#0b0f19]">
+        <Navbar />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
+    </>
   );
 }
 
@@ -61,9 +68,14 @@ export function GuestLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19]">
-      <Outlet />
-    </div>
+    <>
+      {/* Mobile restriction notice screen for mobile devices (< 768px) */}
+      <MobileNotice />
+
+      {/* Guest layout for Tablets & Desktops (>= 768px) */}
+      <div className="hidden md:flex min-h-screen flex-col bg-[#0b0f19]">
+        <Outlet />
+      </div>
+    </>
   );
 }
-
