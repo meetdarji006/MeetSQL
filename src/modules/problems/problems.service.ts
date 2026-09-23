@@ -14,12 +14,18 @@ export async function listProblems(input: ListProblemsInput) {
     conditions.push(eq(problems.difficulty, difficulty));
   }
 
-  if (topic) {
-    conditions.push(arrayContains(problems.topicTags, [topic]));
+  if (topic && topic.trim()) {
+    const cleanTopic = topic.trim();
+    conditions.push(
+      sql`EXISTS (SELECT 1 FROM unnest(${problems.topicTags}) t WHERE LOWER(TRIM(t)) = LOWER(${cleanTopic}))`
+    );
   }
 
-  if (search) {
-    conditions.push(ilike(problems.title, `%${search}%`));
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    conditions.push(
+      sql`(${problems.title} ILIKE ${term} OR EXISTS (SELECT 1 FROM unnest(${problems.topicTags}) t WHERE t ILIKE ${term}))`
+    );
   }
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;

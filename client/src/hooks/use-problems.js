@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { problemsApi } from "../api/problems";
 
 export function useProblems(params) {
   return useQuery({
     queryKey: ["problems", params],
     queryFn: () => problemsApi.list(params),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 }
 
