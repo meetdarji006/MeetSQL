@@ -28,21 +28,22 @@ jobs:
             
             cd ~/MeetSQL
             
-            echo "📥 Pulling latest code..."
-            git pull origin main || git pull origin master
+            echo "📥 Syncing latest code from origin/main..."
+            git fetch origin main
+            git reset --hard origin/main
             
             echo "🐳 Ensuring Docker DB services are running..."
             docker compose up -d postgres oracle
             
-            echo "📦 Installing dependencies & building server..."
+            echo "📦 Installing dependencies & building backend server..."
             npm install
             npm run build:server
             
-            echo "🗄️ Running database migrations..."
-            npx drizzle-kit migrate
+            echo "🗄️ Pushing database schema..."
+            npx drizzle-kit push --force
             
             echo "🌱 Seeding database..."
-            npm run seed
+            npx tsx scripts/seed.ts
             
             echo "🔄 Restarting API process with PM2..."
             pm2 restart meetsql-api || pm2 start dist/server.js --name meetsql-api

@@ -67,7 +67,7 @@ import fs from "fs";
 const clientDistPath = path.resolve(process.cwd(), "client/dist");
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
-  app.get("/{*path}", (req, res, next) => {
+  app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(clientDistPath, "index.html"));
   });
